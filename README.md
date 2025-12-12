@@ -12,7 +12,7 @@
 Projekt analizuje dane z World Happiness Report (lata 2015-2016) w celu zidentyfikowania kluczowych czynników wpływających na poziom szczęścia w różnych krajach świata. Wykorzystuje zaawansowane modele uczenia maszynowego do predykcji wskaźnika szczęścia.
 
 # 🌍 Link do projektu na Colab
-[![Link do projektu](https://colab.research.google.com/drive/1FqkGSzzhdrPNSACvOPQC2y-Fbg0dUxoa?usp=sharing)
+[![Link do projektu](https://img.shields.io/badge/Python-3.8+-blue.svg)]([https://colab.research.google.com/drive/1FqkGSzzhdrPNSACvOPQC2y-Fbg0dUxoa?usp=sharing](https://colab.research.google.com/drive/1FqkGSzzhdrPNSACvOPQC2y-Fbg0dUxoa?usp=sharing)
 
 ### 🎯 Główne Cele
 
