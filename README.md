@@ -1,6 +1,9 @@
 # 🌍 World Happiness Report - Analiza i Predykcja
 
+![World Happiness Map](world_happiness_map.png)
+
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FqkGSzzhdrPNSACvOPQC2y-Fbg0dUxoa?usp=sharing)
 [![Pandas](https://img.shields.io/badge/Pandas-Latest-green.svg)](https://pandas.pydata.org/)
 [![Machine Learning](https://img.shields.io/badge/ML-Scikit--learn-orange.svg)](https://scikit-learn.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -10,9 +13,6 @@
 ## 📊 O Projekcie
 
 Projekt analizuje dane z World Happiness Report (lata 2015-2016) w celu zidentyfikowania kluczowych czynników wpływających na poziom szczęścia w różnych krajach świata. Wykorzystuje zaawansowane modele uczenia maszynowego do predykcji wskaźnika szczęścia.
-
-# 🌍 Link do projektu na Colab
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FqkGSzzhdrPNSACvOPQC2y-Fbg0dUxoa?usp=sharing)
 
 ### 🎯 Główne Cele
 
@@ -36,32 +36,32 @@ Projekt analizuje dane z World Happiness Report (lata 2015-2016) w celu zidentyf
 
 ### Analiza Danych
 ```python
-pandas==latest
-numpy==latest
+pandas
+numpy
 ```
 
 ### Wizualizacja
 ```python
-matplotlib==latest
-seaborn==latest
-plotly==latest
+matplotlib
+seaborn
+plotly
 ```
 
 ### Machine Learning
 ```python
-scikit-learn==latest
-xgboost==latest
+scikit-learn
+xgboost
 ```
 
 ## 📦 Instalacja
 
 ### Krok 1: Sklonuj repozytorium
 ```bash
-git clone https://github.com/twoj-username/world-happiness-analysis.git
+git clone https://github.com/Lidia173323/world-happiness-analysis.git
 cd world-happiness-analysis
 ```
 
-### Krok 2: Stwórz wirtualne środowisko
+### Krok 2: Stwórz wirtualne środowisko (opcjonalnie)
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -71,7 +71,7 @@ venv\Scripts\activate  # Windows
 
 ### Krok 3: Zainstaluj zależności
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn xgboost plotly
+pip install -r requirements.txt
 ```
 
 ### Krok 4: Uruchom analizę
@@ -84,22 +84,11 @@ python world_happiness_analysis.py
 ```
 world-happiness-analysis/
 │
-├── world_happiness_report.csv    # Dane źródłowe
-├── world_happiness_analysis.py   # Główny skrypt analizy
 ├── README.md                      # Dokumentacja projektu
-├── requirements.txt               # Zależności projektu
-│
-├── notebooks/                     # Jupyter notebooks (opcjonalnie)
-│   └── exploratory_analysis.ipynb
-│
-├── visualizations/                # Wygenerowane wykresy
-│   ├── correlation_heatmap.png
-│   ├── feature_importance.png
-│   └── world_happiness_map.html
-│
-└── models/                        # Zapisane modele (opcjonalnie)
-    ├── random_forest_model.pkl
-    └── xgboost_model.pkl
+├── requirements.txt               # Zależności Python
+├── .gitignore                     # Pliki ignorowane przez Git
+├── world_happiness_analysis.py   # Główny skrypt analizy
+└── world_happiness_report.csv    # Dane źródłowe (2015-2016)
 ```
 
 ## 🔬 Metodologia
@@ -173,10 +162,28 @@ Heatmapy pokazujące wzajemne zależności między czynnikami szczęścia.
 4. **Wolność wyboru** - Freedom ma większe znaczenie niż się powszechnie sądzi
 5. **Modele ensemble dominują** - XGBoost i Random Forest osiągają najlepsze wyniki
 
+## 🚀 Przyszłe Usprawnienia
+
+- [ ] Dodanie danych z kolejnych lat (2017-2024)
+- [ ] Implementacja deep learning (Neural Networks)
+- [ ] Analiza szeregów czasowych i trendów
+- [ ] Dashboard interaktywny (Streamlit/Dash)
+- [ ] Analiza klastrów krajów o podobnym profilu szczęścia
+- [ ] Predykcja przyszłych trendów
+- [ ] API do predykcji poziomu szczęścia
+
 ## 📚 Źródła Danych
 
 - [World Happiness Report](https://worldhappiness.report/)
 - [Kaggle - World Happiness Dataset](https://www.kaggle.com/)
+
+## 🤝 Jak Przyczynić się do Projektu
+
+1. Fork projektu
+2. Stwórz branch dla swojej funkcji (`git checkout -b feature/AmazingFeature`)
+3. Commit zmian (`git commit -m 'Add some AmazingFeature'`)
+4. Push do brancha (`git push origin feature/AmazingFeature`)
+5. Otwórz Pull Request
 
 ## 📝 Licencja
 
@@ -185,8 +192,14 @@ Projekt jest dostępny na licencji MIT. Zobacz plik `LICENSE` dla szczegółów.
 ## 👨‍💻 Autor
 
 **Lidia Furgał**
-- GitHub: [@Lidia173323](https://github.com/twoj-username](https://github.com/Lidia173323)
-- LinkedIn: [Lidia Furgał](https://linkedin.com/in/twoj-profil](https://www.linkedin.com/in/lidiafurgal/)
+- GitHub: [@Lidia173323](https://github.com/Lidia173323)
+- LinkedIn: [Lidia Furgał](https://www.linkedin.com/in/lidiafurgal/)
+
+## 🙏 Podziękowania
+
+- World Happiness Report Team za udostępnienie danych
+- Społeczność open-source za nieocenione narzędzia
+- Wszyscy contributors projektu
 
 ---
 
