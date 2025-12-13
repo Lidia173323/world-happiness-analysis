@@ -184,7 +184,7 @@ Projekt jest dostępny na licencji MIT. Zobacz plik `LICENSE` dla szczegółów.
 
 ## 👨‍💻 Autor
 
-**Twoje Imię**
+**Lidia Furgał**
 - GitHub: [@Lidia173323](https://github.com/twoj-username](https://github.com/Lidia173323)
 - LinkedIn: [Lidia Furgał](https://linkedin.com/in/twoj-profil](https://www.linkedin.com/in/lidiafurgal/)
 
