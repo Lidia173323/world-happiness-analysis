@@ -14,8 +14,15 @@ print(df.head())
 print("\n--- Informacje o danych (typach i brakujących wartościach) ---")
 print(df.info())
 
+# Statystyki opisowe
+print("\n--- Statystyki opisowe (zmienne numeryczne) ---")
+print(df.describe().T)
+
+print("\n--- Statystyki opisowe (zmienne obiektowe) ---")
+print(df.describe(include='object').T)
+
 # Obliczenie procentu brakujących wartości
-missimg_data = missing_data = df.isnull().sum().sort_values(ascending=False)
+missing_data = df.isnull().sum().sort_values(ascending=False)
 missing_percentage = (df.isnull().sum() / len(df) * 100).sort_values(ascending=False)
 missing_df = pd.DataFrame({'Missing Count': missing_data, 'Missing Percentage': missing_percentage})
 missing_df = missing_df[missing_df['Missing Count'] > 0]
@@ -23,115 +30,178 @@ missing_df = missing_df[missing_df['Missing Count'] > 0]
 print("\n--- Brakujące Wartości w Danych ---")
 print(missing_df)
 
-df.duplicated().sum()
+# Sprawdzenie duplikatów
+print(f"\nLiczba duplikatów: {df.duplicated().sum()}")
 
-df['year'].value_counts()
+# Analiza lat
+print("\n--- Rozkład danych według roku ---")
+print(df['year'].value_counts())
 
-df[df['year'].isin([2015, 2016])].isna().sum()
+# Filtracja danych do lat 2015-2016
+print("\n--- Brakujące wartości dla lat 2015-2016 ---")
+print(df[df['year'].isin([2015, 2016])].isna().sum())
 
 df = df[df['year'].isin([2015, 2016])]
+print(f"\nLiczba rekordów po filtracji: {len(df)}")
 
-len(df)
-
+# Definiowanie kluczowych kolumn
 key_columns = ['Happiness Score', 'Economy (GDP per Capita)', 'Family',
                'Health (Life Expectancy)', 'Freedom',
                'Trust (Government Corruption)', 'Dystopia Residual']
 
-print("\n--- Statystyki Opisowe ---")
+print("\n--- Statystyki Opisowe (Kluczowe Zmienne) ---")
 print(df[key_columns].describe())
 
+# Wizualizacja rozkładu Happiness Score
 plt.figure(figsize=(10, 6))
-sns.histplot(df['Happiness Score'], kde=True, color='purple')
+sns.histplot(df['Happiness Score'], color='purple')
+plt.title('Rozkład Happiness Score')
+plt.xlabel('Happiness Score')
+plt.ylabel('Częstość')
+plt.show()
 
-plt.figsize = (15, 10)
+# Boxplot według roku
+plt.figure(figsize=(15, 10))
 sns.boxplot(data=df, x='year', y='Happiness Score', palette='magma')
 plt.xlabel('Year')
+plt.ylabel('Happiness Score')
+plt.title('Happiness Score według roku')
+plt.show()
 
+# Pairplot
 sns.pairplot(df[key_columns])
+plt.show()
 
+# Heatmapa korelacji - wszystkie dane
 plt.figure(figsize=(10, 6))
 dcorr = df[key_columns].select_dtypes(include='float64').corr()
 sns.heatmap(dcorr, annot=True, cmap='coolwarm')
+plt.title('Macierz Korelacji - Wszystkie Dane')
+plt.show()
 
 correlation_matrix = df[key_columns].corr()
 
 # Wyświetlenie korelacji z Happiness Score
-print("--- Korelacja Czynników z Happiness Score ---")
+print("\n--- Korelacja Czynników z Happiness Score ---")
 print(correlation_matrix['Happiness Score'].sort_values(ascending=False))
 
+# Heatmapa korelacji - rok 2015
 plt.figure(figsize=(10, 6))
 dcorr = df[df['year'] == 2015][key_columns].select_dtypes(include='float64').corr()
 sns.heatmap(dcorr, annot=True, cmap='coolwarm')
+plt.title('Macierz Korelacji - Rok 2015')
+plt.show()
 
+# Heatmapa korelacji - rok 2016
 plt.figure(figsize=(10, 6))
 dcorr = df[df['year'] == 2016][key_columns].select_dtypes(include='float64').corr()
 sns.heatmap(dcorr, annot=True, cmap='coolwarm')
+plt.title('Macierz Korelacji - Rok 2016')
+plt.show()
+
+# ==================== PRZYGOTOWANIE DANYCH ====================
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-# Wybór cech (X) i zmiennej docelowej (Y)
-X_nor = df[key_columns].drop('Happiness Score', axis=1)
+# Wybór cech (X) i zmiennej docelowej (y)
+X = df[key_columns].drop('Happiness Score', axis=1)
 y = df['Happiness Score']
-
-# Standardyzacja danych
-scaler = StandardScaler()
-X = scaler.fit_transform(X_nor)
 
 # Podział danych na zbiór treningowy i testowy
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-print(f"Rozmiar zbioru treningowego (X_train): {X_train.shape}")
+print(f"\nRozmiar zbioru treningowego (X_train): {X_train.shape}")
 print(f"Rozmiar zbioru testowego (X_test): {X_test.shape}")
 
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import mean_squared_error, r2_score
+# ==================== MODEL 1: LINEAR REGRESSION ====================
+
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.model_selection import cross_val_score
+
+# Standaryzacja danych dla regresji liniowej
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
 # Inicjalizacja i trening modelu
 lr_model = LinearRegression()
-lr_model.fit(X_train, y_train)
+lr_model.fit(X_train_scaled, y_train)
 
 # Predykcje na zbiorze testowym
-lr_pred = lr_model.predict(X_test)
+lr_pred = lr_model.predict(X_test_scaled)
 
 # Ocena modelu
 lr_rmse = np.sqrt(mean_squared_error(y_test, lr_pred))
 lr_r2 = r2_score(y_test, lr_pred)
 
+print("\n" + "="*60)
 print("--- Wyniki Regresji Liniowej ---")
-print(f"R^2 (Współczynnik Determinacji): {lr_r2:.4f}")
+print("="*60)
+print(f"R² (Współczynnik Determinacji): {lr_r2:.4f}")
 print(f"RMSE (Root Mean Squared Error): {lr_rmse:.4f}")
 
 # Walidacja krzyżowa (cv=5)
-lr_cv = cross_val_score(lr_model, X, y, cv=5, scoring='r2')
-print("Cross-val R²:", lr_cv.mean().round(4))
+lr_cv = cross_val_score(lr_model, X_train_scaled, y_train, cv=5, scoring='r2')
+print(f"Cross-val R²: {lr_cv.mean():.4f}")
+
+# ==================== MODEL 2: RANDOM FOREST ====================
 
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import GridSearchCV
 
-# Inicjalizacja i trening modelu
-rf_model = RandomForestRegressor(n_estimators=300, random_state=42)
-rf_model.fit(X_train, y_train)
+# Definicja modelu bazowego
+rf = RandomForestRegressor(random_state=42)
+
+# Siatka hiperparametrów
+param_grid = {
+    'n_estimators': [100, 300, 500, 600],
+    'max_depth': [None, 5, 10, 20, 25],
+    'min_samples_split': [2, 5, 7, 10]
+}
+
+# Grid Search
+print("\n" + "="*60)
+print("--- Random Forest - Grid Search ---")
+print("="*60)
+print("Rozpoczęcie Grid Search (może potrwać kilka minut)...")
+
+grid_search = GridSearchCV(
+    estimator=rf,
+    param_grid=param_grid,
+    cv=5,
+    scoring='r2',
+    n_jobs=-1,
+    verbose=1
+)
+
+# Trenowanie Grid Search
+grid_search.fit(X_train, y_train)
+
+# Najlepszy model
+best_rf = grid_search.best_estimator_
+
+print("\nNajlepsze parametry Grid Search:")
+print(grid_search.best_params_)
 
 # Predykcje na zbiorze testowym
-rf_pred = rf_model.predict(X_test)
+rf_pred = best_rf.predict(X_test)
 
 # Ocena modelu
 rf_rmse = np.sqrt(mean_squared_error(y_test, rf_pred))
 rf_r2 = r2_score(y_test, rf_pred)
 
-print("\n--- Wyniki Random Forest Regressor ---")
-print(f"R^2 (Współczynnik Determinacji): {rf_r2:.4f}")
+print("\n--- Wyniki Random Forest (po Grid Search) ---")
+print(f"R² (Współczynnik Determinacji): {rf_r2:.4f}")
 print(f"RMSE (Root Mean Squared Error): {rf_rmse:.4f}")
 
-rf_cv = cross_val_score(rf_model, X, y, cv=5, scoring='r2')
-print("Cross-val R²:", rf_cv.mean().round(4))
+# Walidacja krzyżowa
+rf_cv = cross_val_score(best_rf, X, y, cv=5, scoring='r2')
+print(f"Cross-val R²: {rf_cv.mean():.4f}")
 
 # Ważność cech z modelu Random Forest
-feature_importances = pd.Series(rf_model.feature_importances_, index=X_nor.columns)
-
-# Sortowanie i wizualizacja
+feature_importances = pd.Series(best_rf.feature_importances_, index=X.columns)
 feature_importances = feature_importances.sort_values(ascending=False)
 
 print("\n--- Ważność Cech w Modelu Random Forest ---")
@@ -142,38 +212,66 @@ sns.barplot(x=feature_importances.values, y=feature_importances.index, palette="
 plt.title('Ważność Czynników w Predykcji Szczęścia (Model Random Forest)')
 plt.xlabel('Ważność (Wkład w redukcję błędu)')
 plt.ylabel('Czynnik')
+plt.tight_layout()
 plt.show()
 
-import xgboost as xgb
-from sklearn.metrics import mean_squared_error, r2_score
-import numpy as np
+# ==================== MODEL 3: XGBOOST ====================
 
-# Inicjalizacja i trening modelu XGBoost
-xgb_model = xgb.XGBRegressor(
-    objective='reg:squarederror',
-    n_estimators=300,
-    learning_rate=0.07,
-    random_state=42
+import xgboost as xgb
+
+# Inicjalizacja modelu XGBoost
+xgb_model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+
+# Siatka hiperparametrów
+param_grid = {
+    'n_estimators': [100, 300, 500],
+    'max_depth': [3, 5, 7],
+    'learning_rate': [0.01, 0.07, 0.1],
+    'subsample': [0.7, 0.9, 1.0],
+    'colsample_bytree': [0.7, 0.9, 1.0]
+}
+
+# Grid Search
+print("\n" + "="*60)
+print("--- XGBoost - Grid Search ---")
+print("="*60)
+print("Rozpoczęcie Grid Search (może potrwać kilka minut)...")
+
+grid_search = GridSearchCV(
+    estimator=xgb_model,
+    param_grid=param_grid,
+    scoring='r2',
+    cv=5,
+    n_jobs=-1,
+    verbose=1
 )
 
-# Trening na zbiorze treningowym
-xgb_model.fit(X_train, y_train)
+# Trenowanie Grid Search
+grid_search.fit(X_train, y_train)
+
+# Najlepszy model
+best_xgb = grid_search.best_estimator_
+
+print("\nNajlepsze parametry Grid Search:")
+print(grid_search.best_params_)
 
 # Predykcje na zbiorze testowym
-xgb_pred = xgb_model.predict(X_test)
+xgb_pred = best_xgb.predict(X_test)
 
 # Ocena modelu
 xgb_rmse = np.sqrt(mean_squared_error(y_test, xgb_pred))
 xgb_r2 = r2_score(y_test, xgb_pred)
 
-print("--- Wyniki XGBoost Regressor ---")
-print(f"R^2 (Współczynnik Determinacji): {xgb_r2:.4f}")
+print("\n--- Wyniki XGBoost (po Grid Search) ---")
+print(f"R² (Współczynnik Determinacji): {xgb_r2:.4f}")
 print(f"RMSE (Root Mean Squared Error): {xgb_rmse:.4f}")
 
-xgb_cv = cross_val_score(xgb_model, X, y, cv=5, scoring='r2')
-print("Cross-val R²:", xgb_cv.mean().round(4))
+# Walidacja krzyżowa
+xgb_cv = cross_val_score(best_xgb, X, y, cv=5, scoring='r2')
+print(f"Cross-val R²: {xgb_cv.mean():.4f}")
 
-xgb_feature_importances = pd.Series(xgb_model.feature_importances_, index=X_nor.columns)
+# Ważność cech
+xgb_feature_importances = pd.Series(best_xgb.feature_importances_, index=X.columns)
 xgb_feature_importances = xgb_feature_importances.sort_values(ascending=False)
 
 print("\n--- Ważność Cech w Modelu XGBoost ---")
@@ -184,35 +282,58 @@ sns.barplot(x=xgb_feature_importances.values, y=xgb_feature_importances.index, p
 plt.title('Ważność Cech w Predykcji Szczęścia (Model XGBoost)')
 plt.xlabel('Ważność (Wkład w redukcję błędu)')
 plt.ylabel('Czynnik')
+plt.tight_layout()
 plt.show()
 
-from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import mean_squared_error, r2_score
-import numpy as np
+# ==================== MODEL 4: GRADIENT BOOSTING ====================
 
-gbr_model = GradientBoostingRegressor(
-    n_estimators=300,
-    learning_rate=0.05,
-    max_depth=3,
-    random_state=42
+from sklearn.ensemble import GradientBoostingRegressor
+
+# Definicja modelu Gradient Boosting
+gbr_model = GradientBoostingRegressor(random_state=42)
+
+param_grid = {
+    'n_estimators': [100, 300, 500],
+    'learning_rate': [0.01, 0.05, 0.1],
+    'max_depth': [3, 5, 7],
+    'subsample': [0.7, 0.9, 1.0],
+    'min_samples_split': [2, 5, 10]
+}
+
+print("\n" + "="*60)
+print("--- Gradient Boosting - Grid Search ---")
+print("="*60)
+print("Rozpoczęcie Grid Search (może potrwać kilka minut)...")
+
+grid_search = GridSearchCV(
+    estimator=gbr_model,
+    param_grid=param_grid,
+    scoring='r2',
+    cv=5,
+    n_jobs=-1,
+    verbose=1
 )
 
-gbr_model.fit(X_train, y_train)
-gbr_pred = gbr_model.predict(X_test)
+grid_search.fit(X_train, y_train)
 
-gbr_r2 = r2_score(y_test, gbr_pred)
+best_gbr = grid_search.best_estimator_
+
+print("\nNajlepsze parametry Grid Search:")
+print(grid_search.best_params_)
+
+gbr_pred = best_gbr.predict(X_test)
+
 gbr_rmse = np.sqrt(mean_squared_error(y_test, gbr_pred))
+gbr_r2 = r2_score(y_test, gbr_pred)
 
-print("\n--- Gradient Boosting Regressor ---")
-print("R²:", round(gbr_r2, 4))
-print("RMSE:", round(gbr_rmse, 4))
+print("\n--- Gradient Boosting Regressor (po Grid Search) ---")
+print(f"R²: {gbr_r2:.4f}")
+print(f"RMSE: {gbr_rmse:.4f}")
 
-# Walidacja krzyżowa
-gbr_cv = cross_val_score(gbr_model, X, y, cv=5, scoring='r2')
-print("Cross-val R²:", gbr_cv.mean().round(4))
+cv_scores = cross_val_score(best_gbr, X, y, cv=5, scoring='r2')
+print(f"Cross-val R²: {cv_scores.mean():.4f}")
 
-gbr_feature_importances = pd.Series(gbr_model.feature_importances_, index=X_nor.columns)
+gbr_feature_importances = pd.Series(best_gbr.feature_importances_, index=X.columns)
 gbr_feature_importances = gbr_feature_importances.sort_values(ascending=False)
 
 print("\n--- Ważność Cech w Modelu Gradient Boosting ---")
@@ -223,62 +344,87 @@ sns.barplot(x=gbr_feature_importances.values, y=gbr_feature_importances.index, p
 plt.title('Ważność Cech w Predykcji Szczęścia (Model Gradient Boosting)')
 plt.xlabel('Ważność (Wkład w redukcję błędu)')
 plt.ylabel('Czynnik')
+plt.tight_layout()
 plt.show()
 
+# ==================== PORÓWNANIE MODELI ====================
+
 results = {
-    'Linear Regression': {'R2': lr_r2, 'RMSE': lr_rmse},
-    'Random Forest': {'R2': rf_r2, 'RMSE': rf_rmse},
-    'XGBoost': {'R2': xgb_r2, 'RMSE': xgb_rmse},
-    'GradientBoostingRegressor': {'R2': gbr_r2, 'RMSE': gbr_rmse}
+    'Linear Regression': {'R2': lr_r2, 'RMSE': lr_rmse, 'CV R2': lr_cv.mean()},
+    'Random Forest': {'R2': rf_r2, 'RMSE': rf_rmse, 'CV R2': rf_cv.mean()},
+    'XGBoost': {'R2': xgb_r2, 'RMSE': xgb_rmse, 'CV R2': xgb_cv.mean()},
+    'Gradient Boosting': {'R2': gbr_r2, 'RMSE': gbr_rmse, 'CV R2': cv_scores.mean()}
 }
 
 results_df = pd.DataFrame(results).T.sort_values(by='R2', ascending=False)
+
+print("\n" + "="*60)
+print("--- PORÓWNANIE WSZYSTKICH MODELI ---")
+print("="*60)
 print(results_df)
 
-# Wizualizacja porównania R^2 i RMSE
+# Wizualizacja porównania R² i RMSE
 fig, ax = plt.subplots(1, 2, figsize=(14, 6))
 
-results_df['R2'].plot(kind='bar', ax=ax[0], title='Porównanie R^2 Modeli (Im wyżej, tym lepiej)', color=['skyblue', 'lightgreen', 'orange', 'coral'])
-ax[0].set_ylabel('R^2 Score')
+results_df['R2'].plot(kind='bar', ax=ax[0], title='Porównanie R² Modeli (Im wyżej, tym lepiej)', 
+                       color=['skyblue', 'lightgreen', 'orange', 'salmon'])
+ax[0].set_ylabel('R² Score')
 ax[0].tick_params(axis='x', rotation=45)
+ax[0].grid(axis='y', alpha=0.3)
 
-results_df['RMSE'].plot(kind='bar', ax=ax[1], title='Porównanie RMSE Modeli (Im niżej, tym lepiej)', color=['skyblue', 'lightgreen', 'orange', 'coral'])
+results_df['RMSE'].plot(kind='bar', ax=ax[1], title='Porównanie RMSE Modeli (Im niżej, tym lepiej)', 
+                         color=['skyblue', 'lightgreen', 'orange', 'salmon'])
 ax[1].set_ylabel('RMSE Score')
 ax[1].tick_params(axis='x', rotation=45)
+ax[1].grid(axis='y', alpha=0.3)
 
 plt.tight_layout()
 plt.show()
 
+# ==================== ANALIZA KRAJÓW ====================
+
+# Usunięcie brakujących wartości w kolumnie Country
 df['Country'].isna().sum()
 df.dropna(subset=['Country'], inplace=True)
 
+# Obliczenie średniego poziomu szczęścia według kraju
 happiness_by_country = df.groupby('Country')['Happiness Score'].mean().sort_values(ascending=False)
+
+print("\n" + "="*60)
+print("--- ANALIZA KRAJÓW ---")
+print("="*60)
 
 print("\n--- Top 5 Krajów z Największym Poziomem Szczęścia ---")
 print(happiness_by_country.head(5))
 
+# Wizualizacja top 15 najszczęśliwszych krajów
 plt.figure(figsize=(20, 10))
 sns.barplot(x=happiness_by_country.head(15).index, y=happiness_by_country.head(15).values, palette='magma')
-plt.title('Top 15 Krajów z Największym Poziomem Szczęścia')
-plt.xlabel('Kraj')
-plt.ylabel('Średni Poziom Szczęścia')
+plt.title('Top 15 Krajów z Największym Poziomem Szczęścia', fontsize=16, fontweight='bold')
+plt.xlabel('Kraj', fontsize=14)
+plt.ylabel('Średni Poziom Szczęścia', fontsize=14)
 plt.xticks(rotation=45, ha='right')
 for index, value in enumerate(happiness_by_country.head(15).values):
     plt.text(index, value + 0.05, f'{value:.2f}', color='black', ha='center')
+plt.tight_layout()
 plt.show()
 
 print("\n--- Top 5 Krajów z Najniższym Poziomem Szczęścia ---")
 print(happiness_by_country.tail(5))
 
+# Wizualizacja top 15 najmniej szczęśliwych krajów
 plt.figure(figsize=(20, 10))
 sns.barplot(x=happiness_by_country.tail(15).index, y=happiness_by_country.tail(15).values, palette='magma')
-plt.title('Top 15 Krajów z Najniższym Poziomem Szczęścia')
-plt.xlabel('Kraj')
-plt.ylabel('Średni Poziom Szczęścia')
+plt.title('Top 15 Krajów z Najniższym Poziomem Szczęścia', fontsize=16, fontweight='bold')
+plt.xlabel('Kraj', fontsize=14)
+plt.ylabel('Średni Poziom Szczęścia', fontsize=14)
 plt.xticks(rotation=45, ha='right')
 for index, value in enumerate(happiness_by_country.tail(15).values):
     plt.text(index, value + 0.05, f'{value:.2f}', color='black', ha='center')
+plt.tight_layout()
 plt.show()
+
+# ==================== MAPA ŚWIATA ====================
 
 import plotly.express as px
 
@@ -286,5 +432,12 @@ fig = px.choropleth(df,
                     locations='Country', 
                     locationmode='country names',
                     color='Happiness Score',
-                    title='World Happiness Score Map')
+                    hover_name='Country',
+                    hover_data=['Happiness Score'],
+                    color_continuous_scale='Viridis',
+                    title='Mapa Poziomu Szczęścia na Świecie (2015-2016)')
 fig.show()
+
+print("\n" + "="*60)
+print("ANALIZA ZAKOŃCZONA POMYŚLNIE!")
+print("="*60)
