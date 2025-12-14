@@ -1,6 +1,6 @@
 # 🌍 World Happiness Report - Analiza i Predykcja
 
-![World Happiness Map]([world_happiness_map.png](https://img.relly.dev/images/2025/12/14/mapka.png)
+![World Happiness Map](https://img.relly.dev/images/2025/12/14/mapka.png)
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1FqkGSzzhdrPNSACvOPQC2y-Fbg0dUxoa?usp=sharing)
