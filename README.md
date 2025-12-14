@@ -162,16 +162,6 @@ Heatmapy pokazujące wzajemne zależności między czynnikami szczęścia.
 4. **Wolność wyboru** - Freedom ma większe znaczenie niż się powszechnie sądzi
 5. **Modele ensemble dominują** - XGBoost i Random Forest osiągają najlepsze wyniki
 
-## 🚀 Przyszłe Usprawnienia
-
-- [ ] Dodanie danych z kolejnych lat (2017-2024)
-- [ ] Implementacja deep learning (Neural Networks)
-- [ ] Analiza szeregów czasowych i trendów
-- [ ] Dashboard interaktywny (Streamlit/Dash)
-- [ ] Analiza klastrów krajów o podobnym profilu szczęścia
-- [ ] Predykcja przyszłych trendów
-- [ ] API do predykcji poziomu szczęścia
-
 ## 📚 Źródła Danych
 
 - [World Happiness Report](https://worldhappiness.report/)
@@ -194,12 +184,6 @@ Projekt jest dostępny na licencji MIT. Zobacz plik `LICENSE` dla szczegółów.
 **Lidia Furgał**
 - GitHub: [@Lidia173323](https://github.com/Lidia173323)
 - LinkedIn: [Lidia Furgał](https://www.linkedin.com/in/lidiafurgal/)
-
-## 🙏 Podziękowania
-
-- World Happiness Report Team za udostępnienie danych
-- Społeczność open-source za nieocenione narzędzia
-- Wszyscy contributors projektu
 
 ---
 
